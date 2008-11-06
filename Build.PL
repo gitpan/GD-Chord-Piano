@@ -1,0 +1,19 @@
+use strict;
+use warnings;
+use Module::Build;
+
+my $builder = Module::Build->new(
+    module_name         => 'GD::Chord::Piano',
+    license             => 'perl',
+    dist_author         => 'Dai Okabayashi <genkivogue@ybb.ne.jp>',
+    dist_version_from   => 'lib/GD/Chord/Piano.pm',
+    requires => {
+        'Test::More'            => 0,
+        'version'               => 0,
+        'Class::Accessor::Fast' => 0,
+        'GD'                    => 2.30,
+    },
+    add_to_cleanup      => [ 'GD-Chord-Piano-*' ],
+);
+
+$builder->create_build_script();
