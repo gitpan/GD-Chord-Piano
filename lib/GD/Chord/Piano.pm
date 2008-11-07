@@ -11,7 +11,7 @@ __PACKAGE__->mk_accessors(
     qw(bgcolor color pcolor tcolor interlaced)
 );
 
-use version; our $VERSION = qv('0.0.2');
+use version; our $VERSION = qv('0.0.3');
 
 my $base_chord_list = {
     'base'     => '0,4,7',
@@ -213,9 +213,14 @@ list all kind of chord
 =back
 
 
+=head1 SEE ALSO
+
+GD::Tab::Uklele GD::Tab::Guitar Text::Chord::Piano
+
+
 =head1 AUTHOR
 
-Copyright (c) 2008, Dai Okabayashi C<< <genkivogue@ybb.ne.jp> >>
+Copyright (c) 2008, Dai Okabayashi C<< <bayashi@perl.org> >>
 
 Thanks to Yuichi Tateno, Koichi Taniguchi.
 
