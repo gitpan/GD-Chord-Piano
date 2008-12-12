@@ -1,5 +1,8 @@
 Revision history for GD-Chord-Piano
 
+0.0.5  Fri Dec 12 13:25:25 2008
+       fixed cord list. fixed etc and added tests
+
 0.0.4  Mon Nov 24 16:16:16 2008
        fixed pod(Email address)
 

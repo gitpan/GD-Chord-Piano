@@ -10,6 +10,7 @@ my $builder = Module::Build->new(
     requires => {
         'Test::More'            => 0,
         'version'               => 0,
+		'Carp'                  => 0,
         'Class::Accessor::Fast' => 0,
         'GD'                    => 2.30,
     },

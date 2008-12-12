@@ -2,7 +2,7 @@ package GD::Chord::Piano;
 
 use warnings;
 use strict;
-use Carp;
+use Carp qw( croak );
 
 use GD;
 
@@ -11,34 +11,46 @@ __PACKAGE__->mk_accessors(
     qw(bgcolor color pcolor tcolor interlaced)
 );
 
-use version; our $VERSION = qv('0.0.4');
+use version; our $VERSION = qv('0.0.5');
 
 my $base_chord_list = {
     'base'     => '0,4,7',
-    'b5'       => '0,4,6',
+    '-5'       => '0,4,6',
     '6'        => '0,4,7,9',
-    '6(9)'     => '0,4,7,9,14',
+    '6(9)'     => '0,4,7,9,14',         '69'       => '0,4,7,9,14',
     'M7'       => '0,4,7,11',
-    'M7(9)'    => '0,4,7,11,14',
+    'M7(9)'    => '0,4,7,11,14',        'M79'       => '0,4,7,11,14',
+    'M9'       => '0,4,7,11,14',
+    'M11'      => '0,4,7,11,14,17',
+    'M13'      => '0,4,7,11,14,17,21',
     '7'        => '0,4,7,10',
-    '7(b5)'    => '0,4,6,10',
-    '7(b9)'    => '0,4,7,10,13',
-    '7(b9,13)' => '0,4,7,10,13,17,21',
-    '7(9)'     => '0,4,7,10,14',
-    '7(9,13)'  => '0,4,7,10,14,17,21',
+    '7(b5)'    => '0,4,6,10',           '7b5'      => '0,4,6,10',
+    '7(-5)'    => '0,4,6,10',           '7-5'      => '0,4,6,10',
+    '7(b9)'    => '0,4,7,10,13',        '7b9'      => '0,4,7,10,13',
+    '7(-9)'    => '0,4,7,10,13',        '7-9'      => '0,4,7,10,13',
+    '-9'       => '0,4,7,10,13',
+    '-9(#5)'   => '0,4,8,10,13',        '-9#5'     => '0,4,8,10,13',
+    '7(b9,13)' => '0,4,7,10,13,21',     '7(-9,13)' => '0,4,7,10,13,21',
+    '7(9,13)'  => '0,4,7,10,14,21',
+    '7(#9)'    => '0,4,7,10,15',        '7#9'      => '0,4,7,10,15',
+    '7(#11)'   => '0,4,7,10,15,18',     '7#11'     => '0,4,7,10,15,18',
+    '7(#13)'   => '0,4,10,21',          '7#13'     => '0,4,10,21',
+    '9'        => '0,4,7,10,14',
+    '9(b5)'    => '0,4,6,10,14',        '9b5'      => '0,4,6,10,14',
+    '9(-5)'    => '0,4,6,10,14',        '9-5'      => '0,4,6,10,14',
     '11'       => '0,4,7,10,14,17',
-    '7(#9)'    => '0,4,7,10,15',
-    '7(#11)'   => '0,4,7,10,18',
-    '7(b13)'   => '0,4,8,10',
-    '7(13)'    => '0,4,10,21',
+    '13'       => '0,4,7,10,14,17,21',
     'm'        => '0,3,7',
     'm6'       => '0,3,7,9',
-    'm6(9)'    => '0,3,7,9',
+    'm6(9)'    => '0,3,7,9,14',          'm69'     => '0,3,7,9,14',
     'mM7'      => '0,3,7,11',
     'm7'       => '0,3,7,10',
-    'm7(b5)'   => '0,3,6,10',
-    'm7(9)'    => '0,3,7,10,14',
+    'm7(b5)'   => '0,3,6,10',            'm7b5'    => '0,3,6,10',
+    'm7(-5)'   => '0,3,6,10',            'm7-5'    => '0,3,6,10',
+    'm7(9)'    => '0,3,7,10,14',         'm79'     => '0,3,7,10,14',
+    'm9'       => '0,3,7,10,14',
     'm7(9,11)' => '0,3,7,10,14,17',
+    'm11'      => '0,3,7,10,14,17',
     'm13'      => '0,3,7,10,14,17,21',
     'dim'      => '0,3,6',
     'dim7'     => '0,3,6,9',
@@ -130,17 +142,17 @@ sub all_chords {
 
 sub _get_keys {
     my ($self, $chord_name) = @_;
-    croak("no chord") unless $chord_name;
+    croak "no chord" unless $chord_name;
     my ($tonic, $kind) = ($chord_name =~ /([A-G][b#]?)(.+)?/);
     $kind = 'base' unless $kind;
-    my $scalic = $scalic_value->{$tonic};
-    croak("undefined chord $chord_name ($tonic)") unless defined $scalic;
-    croak("undefined chord $chord_name ($kind)") unless defined $base_chord_list->{$kind};
+    croak "undefined chord $chord_name" unless defined $tonic;
+	my $scalic = $scalic_value->{$tonic};
+    croak "undefined kind of chord $chord_name ($kind)" unless defined $base_chord_list->{$kind};
     my @keys;
-    for my $scale ( split(/\,/, $base_chord_list->{$kind}) ){
+    for my $scale ( split /\,/, $base_chord_list->{$kind} ){
         my $tone = $scale + $scalic;
         $tone = int($tone % 24) + 12 if $tone > 23;
-        push(@keys, $tone);
+        push @keys, $tone;
     }
     return @keys;
 }
@@ -148,7 +160,7 @@ sub _get_keys {
 sub _draw_keyboard {
     my $self = shift;
 
-    my $im = GD::Image->new(141,50);
+    my $im = GD::Image->new(127,43);
     my $bgcolor = $im->colorAllocate(@{$self->bgcolor});
     my $color   = $im->colorAllocate(@{$self->color});
 
